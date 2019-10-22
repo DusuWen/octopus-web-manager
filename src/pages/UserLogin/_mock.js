@@ -17,7 +17,7 @@ export default {
 
     if (password === 'guest123.' && userName === 'guest') {
       res.send({
-        status: 'ok',
+        code: 200,
         type,
         currentAuthority: 'user',
       });

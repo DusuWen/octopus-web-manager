@@ -94,8 +94,12 @@ export default {
         {
           path: '/',
           component: '../layouts/BasicLayout',
-          authority: ['admin', 'user'],
           routes: [
+            {
+              path: '/',
+              redirect: '/order/orders',
+              authority: ['admin', 'user'],
+            },
             {
               name: 'order',
               icon: 'shopping-cart',
@@ -114,10 +118,6 @@ export default {
                   authority: ['admin'],
                 },
               ],
-            },
-            {
-              path: '/',
-              redirect: '/order/orders',
             },
             {
               component: './404',

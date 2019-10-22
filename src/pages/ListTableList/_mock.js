@@ -3,6 +3,7 @@ import { parse } from 'url';
 let tableListDataSource = [];
 
 tableListDataSource.push({
+  keyid: '002',
   orderId: '78909',
   user: '6987',
   userName: '小爱',
@@ -33,6 +34,9 @@ function getRule(req, res) {
       current: 1,
       pages: 1,
       records: tableListDataSource,
+      orderTotal: '1',
+      orderSum: '11',
+      saleSum: '11',
     },
     message: 'success',
   };

@@ -80,7 +80,7 @@ export default {
 
     if (password === 'admin123.' && userName === 'admin') {
       res.send({
-        code: 200,
+        status: 'ok',
         type,
         currentAuthority: 'admin',
       });

@@ -8,6 +8,7 @@ import {
 import React, { Component } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { connect } from 'dva';
+import baseUrl from '../../../config/baseUrl';
 
 const FormItem = Form.Item;
 
@@ -87,7 +88,7 @@ class FormBasicForm extends Component {
                 getValueFromEvent: this.normFile,
               })(
                 <Upload
-                  action="http://localhost:8087/file/importFile"
+                  action={`${baseUrl}/file/importFile`}
                   listType="text"
                 >
                   <Button>

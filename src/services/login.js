@@ -1,10 +1,8 @@
 import request from '@/utils/request';
+import baseUrl from '../../config/baseUrl'
 
-let url = '/user/login';
-url = `http://localhost:8087${url}`;
-// url = `http://02eb8281.ngrok.io${url}`;
 export async function fakeAccountLogin(params) {
-  return request(url, {
+  return request(`${baseUrl}/user/login`, {
     method: 'POST',
     data: params,
   });

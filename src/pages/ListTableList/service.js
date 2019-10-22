@@ -1,10 +1,8 @@
 import request from '@/utils/request';
+import baseUrl from '../../../config/baseUrl';
 
-let url = '/order/selectOrderList';
-url = `http://localhost:8087${url}`;
-// url = `http://02eb8281.ngrok.io${url}`;
 export async function queryFakeList(params) {
-  return request(url, {
+  return request(`${baseUrl}/order/selectOrderList`, {
     method: 'POST',
     data: { ...params },
   });

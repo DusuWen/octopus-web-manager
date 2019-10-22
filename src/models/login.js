@@ -3,6 +3,7 @@ import { stringify } from 'querystring';
 import { fakeAccountLogin, getFakeCaptcha } from '@/services/login';
 import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
+import { reloadAuthorized } from '@/utils/Authorized';
 
 const Model = {
   namespace: 'login',
@@ -36,8 +37,7 @@ const Model = {
             return;
           }
         }
-
-        yield put(routerRedux.replace(redirect || '/'));
+        yield put(routerRedux.replace('/'));
       }
     },
 
@@ -63,7 +63,8 @@ const Model = {
   reducers: {
     changeLoginStatus(state, { payload }) {
       setAuthority(payload.currentAuthority);
-      return { ...state, status: payload.status, type: payload.type };
+      reloadAuthorized();
+      return { ...state, code: payload.code, type: payload.type };
     },
   },
 };

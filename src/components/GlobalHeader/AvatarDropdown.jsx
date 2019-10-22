@@ -14,6 +14,7 @@ class AvatarDropdown extends React.Component {
       const { dispatch } = this.props;
 
       if (dispatch) {
+        localStorage.removeItem('antd-pro-authority');
         dispatch({
           type: 'login/logout',
         });

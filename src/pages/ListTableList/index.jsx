@@ -118,16 +118,10 @@ class TableList extends Component {
           }}
         >
           <Col md={9} sm={24}>
-            <FormItem label="">
+            <FormItem label="商品名称">
               {getFieldDecorator('idName')(
-                <InputGroup compact>
-                  <Select defaultValue="商品名称">
-                    <Option value="商品名称">商品名称</Option>
-                    <Option value="订单编号" disabled>订单编号</Option>
-                    <Option value="商户单号" disabled>商户单号</Option>
-                  </Select>
-                  <Input style={{ width: '70%' }} placeholder="关键词" />
-                </InputGroup>,
+                <Input
+                  placeholder="" />,
               )}
             </FormItem>
           </Col>
@@ -261,8 +255,8 @@ class TableList extends Component {
                   placeholder="请选择"
                 >
                   <Option value={ null }>全部</Option>
-                  <Option value="未退">未退</Option>
-                  <Option value="已退">已退</Option>
+                  <Option value="否">未退</Option>
+                  <Option value="是">已退</Option>
                 </Select>,
               )}
             </FormItem>
@@ -305,7 +299,7 @@ class TableList extends Component {
     const paginationProps = {
       onChange: this.handlePageChange,
       pageSize: 10,
-      total: data.total,
+      total: data.total || 0,
     };
 
     const { modalVisible, updateModalVisible, stepFormValues } = this.state;
@@ -363,8 +357,8 @@ class TableList extends Component {
         </div>
       </div>
     );
-    const ListItemTitle = ({ data: { title, orderTime } }) => (
-      <div className={styles.listContentItemTitle}>{title}<span>{moment(orderTime).format('YYYY-MM-DD HH:mm')}</span></div>
+    const ListItemTitle = ({ data: { idName, orderTime } }) => (
+      <div className={styles.listContentItemTitle}>{idName} <span>{moment(orderTime).format('YYYY-MM-DD HH:mm')}</span></div>
     );
     return (
       <PageHeaderWrapper>
@@ -389,12 +383,13 @@ class TableList extends Component {
             <Divider />
             <List
               size="large"
-              rowKey="id"
+              rowKey="keyid"
               loading={loading}
               pagination={paginationProps}
               dataSource={data.records}
               renderItem={item => (
                 <List.Item
+                  key={item.keyid}
                   actions={[
                     <Button type="link" disabled>查看/退款</Button>,
                   ]}

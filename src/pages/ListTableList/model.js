@@ -3,7 +3,9 @@ import { addRule, removeRule, updateRule, queryFakeList } from './service';
 const Model = {
   namespace: 'listTableList',
   state: {
-    data: [],
+    data: {
+      total: 0,
+    },
   },
   effects: {
     *fetch({ payload }, { call, put }) {
