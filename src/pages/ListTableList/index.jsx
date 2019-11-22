@@ -10,9 +10,9 @@ import {
   Row,
   Select,
   Icon,
-  message, List,
+  List,
 } from 'antd';
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { connect } from 'dva';
 import moment from 'moment';
@@ -23,7 +23,6 @@ import styles from './style.less';
 const FormItem = Form.Item;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
-const InputGroup = Input.Group;
 
 /* eslint react/no-multi-comp:0 */
 @connect(({ listTableList, loading }) => ({
@@ -34,7 +33,6 @@ class TableList extends Component {
   state = {
     modalVisible: false,
     updateModalVisible: false,
-    formValues: {},
     stepFormValues: {},
   };
 
@@ -45,31 +43,53 @@ class TableList extends Component {
       payload: {
         pageNum: 1,
         pageSize: 10,
-        idName: '',
-        userName: '',
-        startTime: '',
-        endTime: '',
-        pointName: '',
-        orderStatus: '',
-        payStatus: '',
-        saleStatus: '',
-        isSuccess: '',
+        idName: null,
+        userName: null,
+        startTime: moment().startOf('day').format('x'),
+        endTime: moment().format('x'),
+        pointName: null,
+        orderStatus: null,
+        payStatus: null,
+        saleStatus: null,
+        isSuccess: null,
       },
     });
   }
 
   handlePageChange = (page, pageSize) => {
-    const { dispatch } = this.props;
-    const { formValues } = this.state;
-    const params = {
-      pageNum: page,
-      pageSize,
-      ...formValues,
-    };
-    dispatch({
-      type: 'listTableList/fetch',
-      payload: params,
+    const { dispatch, form } = this.props;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      const endTime = (moment(fieldsValue.startTime[1]).format('x') > new Date().getTime()) ? new Date().getTime().toString() : moment(fieldsValue.startTime[1]).format('x')
+      const values = {
+        idName: (fieldsValue.idName !== undefined && fieldsValue.idName !== '') ? fieldsValue.idName : null,
+        userName: (fieldsValue.userName !== undefined && fieldsValue.userName !== '') ? fieldsValue.userName : null,
+        startTime: (fieldsValue.startTime !== undefined) ? moment(fieldsValue.startTime[0]).format('x') : null,
+        endTime: (fieldsValue.startTime !== undefined) ? endTime : null,
+        pointName: (fieldsValue.pointName !== undefined) ? fieldsValue.pointName : null,
+        orderStatus: (fieldsValue.orderStatus !== undefined) ? fieldsValue.orderStatus : null,
+        payStatus: (fieldsValue.payStatus !== undefined) ? fieldsValue.payStatus : null,
+        saleStatus: (fieldsValue.saleStatus !== undefined) ? fieldsValue.saleStatus : null,
+        isSuccess: (fieldsValue.isSuccess !== undefined) ? fieldsValue.isSuccess : null,
+      };
+      const params = {
+        ...values,
+        pageNum: page,
+        pageSize,
+      };
+      dispatch({
+        type: 'listTableList/fetch',
+        payload: params,
+      });
     });
+  };
+
+  handleDate = time => {
+    if (!time) {
+      return false
+    } else {
+      return time > moment()
+    }
   };
 
   handleSearch = e => {
@@ -77,20 +97,18 @@ class TableList extends Component {
     const { dispatch, form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
+      const endTime = (moment(fieldsValue.startTime[1]).format('x') > new Date().getTime()) ? new Date().getTime().toString() : moment(fieldsValue.startTime[1]).format('x')
       const values = {
-        idName: (fieldsValue.idName !== undefined) ? fieldsValue.idName : null,
-        userName: (fieldsValue.userName !== undefined) ? fieldsValue.userName : null,
+        idName: (fieldsValue.idName !== undefined && fieldsValue.idName !== '') ? fieldsValue.idName : null,
+        userName: (fieldsValue.userName !== undefined && fieldsValue.userName !== '') ? fieldsValue.userName : null,
         startTime: (fieldsValue.startTime !== undefined) ? moment(fieldsValue.startTime[0]).format('x') : null,
-        endTime: (fieldsValue.startTime !== undefined) ? moment(fieldsValue.startTime[1]).format('x') : null,
+        endTime: (fieldsValue.startTime !== undefined) ? endTime : null,
         pointName: (fieldsValue.pointName !== undefined) ? fieldsValue.pointName : null,
         orderStatus: (fieldsValue.orderStatus !== undefined) ? fieldsValue.orderStatus : null,
         payStatus: (fieldsValue.payStatus !== undefined) ? fieldsValue.payStatus : null,
         saleStatus: (fieldsValue.saleStatus !== undefined) ? fieldsValue.saleStatus : null,
         isSuccess: (fieldsValue.isSuccess !== undefined) ? fieldsValue.isSuccess : null,
       };
-      this.setState({
-        formValues: values,
-      });
       const params = {
         ...values,
         pageNum: 1,
@@ -112,12 +130,14 @@ class TableList extends Component {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row
           gutter={{
-            md: 80,
-            lg: 24,
+            xs: 0,
+            sm: 48,
+            md: 48,
+            lg: 48,
             xl: 48,
           }}
         >
-          <Col md={9} sm={24}>
+          <Col md={6} lg={9} sm={24}>
             <FormItem label="商品名称">
               {getFieldDecorator('idName')(
                 <Input
@@ -133,12 +153,14 @@ class TableList extends Component {
                 )}
             </FormItem>
           </Col>
-          <Col md={9} sm={24}>
+          <Col md={12} lg={9} sm={24}>
             <Form.Item label="下单日期">
               {getFieldDecorator('startTime', {
-                initialValue: [moment().startOf('day'), moment().endOf('day')],
+                initialValue: [moment().startOf('day'), moment().endOf('day'), moment()],
               })(
                 <RangePicker
+                  allowClear={false}
+                  disabledDate={this.handleDate}
                   style={{
                     width: '100%',
                   }}/>,
@@ -148,8 +170,10 @@ class TableList extends Component {
         </Row>
         <Row
           gutter={{
-            md: 80,
-            lg: 24,
+            xs: 0,
+            sm: 48,
+            md: 48,
+            lg: 48,
             xl: 48,
           }}
         >
@@ -173,9 +197,31 @@ class TableList extends Component {
           </Col>
           <Col md={6} sm={24}>
             <FormItem label="点位全称">
-              {getFieldDecorator('pointName')(
-                <Input
-                  placeholder="" />,
+              {getFieldDecorator('pointName', {
+                initialValue: null,
+              })(
+                <Select
+                  placeholder="请选择"
+                >
+                  <Option value={ null }>全部</Option>
+                  <Option value="北大二教1楼102旁边">北大二教1楼102旁边</Option>
+                  <Option value="北大二教1楼电梯正对面">北大二教1楼电梯正对面</Option>
+                  <Option value="北大二教2楼206旁边">北大二教2楼206旁边</Option>
+                  <Option value="北大二教3楼301教室旁">北大二教3楼301教室旁</Option>
+                  <Option value="北大二教4楼410教室对面">北大二教4楼410教室对面</Option>
+                  <Option value="北大理教1楼大厅电梯口">北大理教1楼大厅电梯口</Option>
+                  <Option value="北大理教2楼电梯口">北大理教2楼电梯口</Option>
+                  <Option value="北大理教3楼电梯口">北大理教3楼电梯口</Option>
+                  <Option value="北大理教4楼408旁边">北大理教4楼408旁边</Option>
+                  <Option value="北大三教1楼电梯口">北大三教1楼电梯口</Option>
+                  <Option value="北大双创中心地下一层">北大双创中心地下一层</Option>
+                  <Option value="北大一教1楼大厅">北大一教1楼大厅</Option>
+                  <Option value="北大光华管理学院1楼">北大光华管理学院1楼</Option>
+                  <Option value="北大新太阳活动中心1楼">北大新太阳活动中心1楼</Option>
+                  <Option value="北大法学院1层">北大法学院1层</Option>
+                  <Option value="北大微电子大厦一层">北大微电子大厦一层</Option>
+                  <Option value="北大信息科学与技术学院1层">北大信息科学与技术学院1层</Option>
+                </Select>,
               )}
             </FormItem>
           </Col>
@@ -191,8 +237,10 @@ class TableList extends Component {
         </Row>
         <Row
           gutter={{
-            md: 80,
-            lg: 24,
+            xs: 0,
+            sm: 48,
+            md: 48,
+            lg: 48,
             xl: 48,
           }}
         >
@@ -343,9 +391,9 @@ class TableList extends Component {
     // eslint-disable-next-line max-len
     const ListContent = ({ data: { userName, pay, orderStatus, payStatus, saleStatus, isSuccess, orderPay } }) => (
       <div className={styles.listContent}>
-        <div className={styles.listContentItem}>
-          <span>{userName}</span>
-          <p><PayIcon payType={pay}/> ¥{orderPay}</p>
+        <div className={styles.listContentItem} style={{ textAlign: 'right' }}>
+          <p>{userName}</p>
+          <p style={{ textAlign: 'right' }}><PayIcon payType={pay}/> ¥{orderPay}</p>
         </div>
         <div className={styles.listContentItem}>
           <p>订单: <OrderStatusBadge data={orderStatus} /></p>
@@ -353,12 +401,12 @@ class TableList extends Component {
         </div>
         <div className={styles.listContentItem}>
           <p>出货: <SaleStatusBadge data={saleStatus} /></p>
-          <p>退款: <IsSuccessBadge data={isSuccess} /></p>
+          <p style={{ textAlign: 'left' }}>退款: <IsSuccessBadge data={isSuccess} /></p>
         </div>
       </div>
     );
     const ListItemTitle = ({ data: { idName, orderTime } }) => (
-      <div className={styles.listContentItemTitle}>{idName} <span>{moment(orderTime).format('YYYY-MM-DD HH:mm')}</span></div>
+      <div className={styles.listContentItemTitle}><p>{idName}</p> <span>{moment(orderTime).format('YYYY-MM-DD HH:mm')}</span></div>
     );
     return (
       <PageHeaderWrapper>
@@ -389,6 +437,7 @@ class TableList extends Component {
               dataSource={data.records}
               renderItem={item => (
                 <List.Item
+                  className={styles.customListItem}
                   key={item.keyid}
                   actions={[
                     <Button type="link" disabled>查看/退款</Button>,

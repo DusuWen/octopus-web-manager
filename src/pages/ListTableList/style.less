@@ -9,9 +9,11 @@
     }
   }
   .listContent {
+    display: flex;
     font-size: 0;
     .listContentItem {
-      display: inline-block;
+      //display: inline-block;
+      flex-shrink: 0;
       margin-left: 40px;
       color: @text-color-secondary;
       font-size: @font-size-base;
@@ -23,12 +25,17 @@
         margin-top: 4px;
         margin-bottom: 0;
         line-height: 22px;
+        text-align: right;
       }
     }
   }
   .listContentItemTitle {
     color: @text-color;
     font-size: 22px;
+    p{
+      display: inline-block;
+      margin-bottom: 0;
+    }
     > span {
       color: @text-color-secondary;
       font-size: @font-size-sm;
@@ -68,7 +75,32 @@
     }
   }
 }
-
+@media (max-width: 575px) {
+  .tableList{
+    .listContentItemTitle{
+      p{
+        display: block;
+      }
+    }
+    .listContent{
+      justify-content: flex-end;
+      width: 100%;
+      margin-top: 20px;
+      padding-right: 15px;
+      .listContentItem{
+        margin-left: 10px;
+      }
+    }
+    .customListItem{
+      :global {
+        .ant-list-item-action{
+          width: 100%;
+          text-align: right;
+        }
+      }
+    }
+  }
+}
 .tableListForm {
   :global {
     .ant-form-item {
