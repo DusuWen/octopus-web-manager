@@ -12,7 +12,25 @@ const Model = {
   },
   effects: {
     *login({ payload }, { call, put }) {
-      const response = yield call(fakeAccountLogin, payload);
+      const { password, userName, type } = payload;
+      let response = {};
+
+      if (password === 'admin123.' && userName === 'admin') {
+        response = {
+          code: 200,
+          type,
+          currentAuthority: 'admin',
+        }
+      }
+
+      if (password === 'renrenchuang123' && userName === 'guest') {
+        response = {
+          code: 200,
+          type,
+          currentAuthority: 'user',
+        }
+      }
+      // const response = yield call(fakeAccountLogin, payload);
       yield put({
         type: 'changeLoginStatus',
         payload: response,
