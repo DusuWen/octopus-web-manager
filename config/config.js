@@ -175,6 +175,7 @@ export default {
     basePath: '/',
   },
   chainWebpack: webpackPlugin,
+
   /*
   proxy: {
     '/server/api/': {
@@ -184,4 +185,7 @@ export default {
     },
   },
   */
+  base: '/',
+  history: 'hash',
 };
+
